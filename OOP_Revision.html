@@ -1,0 +1,1177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OOP Quest — CSC1200 Revision</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@300;400;500&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0b0c10;
+  --bg2: #111318;
+  --bg3: #16181f;
+  --surface: #1c1f28;
+  --surface2: #232733;
+  --border: rgba(255,255,255,0.07);
+  --border2: rgba(255,255,255,0.13);
+  --text: #e8eaf2;
+  --muted: #7b7f93;
+  --accent: #7c6af7;
+  --accent2: #c084fc;
+  --green: #4ade80;
+  --amber: #fbbf24;
+  --red: #f87171;
+  --cyan: #22d3ee;
+  --font-head: 'Syne', sans-serif;
+  --font-body: 'DM Sans', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--font-body);
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ─── NOISE OVERLAY ─── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 0;
+  opacity: .5;
+}
+
+/* ─── SIDEBAR ─── */
+.sidebar {
+  position: fixed;
+  left: 0; top: 0;
+  width: 240px; height: 100vh;
+  background: var(--bg2);
+  border-right: 1px solid var(--border);
+  display: flex; flex-direction: column;
+  z-index: 100;
+  overflow-y: auto;
+}
+.logo {
+  padding: 1.5rem 1.5rem 1rem;
+  border-bottom: 1px solid var(--border);
+}
+.logo-tag {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--accent);
+  letter-spacing: .15em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.logo-title {
+  font-family: var(--font-head);
+  font-size: 1.3rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, #a78bfa, #22d3ee);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.logo-sub {
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 2px;
+}
+nav { padding: 1rem 0; flex: 1; }
+.nav-section {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: .15em;
+  text-transform: uppercase;
+  color: var(--muted);
+  padding: 1rem 1.5rem 0.4rem;
+}
+.nav-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 1.5rem;
+  font-size: 13px;
+  color: var(--muted);
+  cursor: pointer;
+  transition: all .2s;
+  border-left: 2px solid transparent;
+  text-decoration: none;
+}
+.nav-item:hover { color: var(--text); background: rgba(255,255,255,.03); }
+.nav-item.active { color: var(--accent2); border-left-color: var(--accent2); background: rgba(124,106,247,.06); }
+.nav-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; opacity: .6; flex-shrink: 0; }
+.nav-item.active .nav-dot { opacity: 1; }
+
+/* ─── MAIN ─── */
+.main {
+  margin-left: 240px;
+  min-height: 100vh;
+  position: relative;
+  z-index: 1;
+}
+
+/* ─── HERO ─── */
+.hero {
+  padding: 5rem 4rem 4rem;
+  border-bottom: 1px solid var(--border);
+  position: relative;
+  overflow: hidden;
+}
+.hero::after {
+  content: '';
+  position: absolute;
+  top: -100px; right: -100px;
+  width: 500px; height: 500px;
+  background: radial-gradient(circle, rgba(124,106,247,.12) 0%, transparent 70%);
+  pointer-events: none;
+}
+.hero-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--accent);
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  margin-bottom: 1.2rem;
+  display: flex; align-items: center; gap: 10px;
+}
+.hero-eyebrow::before {
+  content: '';
+  width: 24px; height: 1px;
+  background: var(--accent);
+}
+.hero-title {
+  font-family: var(--font-head);
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  font-weight: 800;
+  line-height: 1.05;
+  margin-bottom: 1rem;
+}
+.hero-title span {
+  background: linear-gradient(135deg, #a78bfa 0%, #22d3ee 60%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.hero-desc {
+  font-size: 1rem;
+  color: var(--muted);
+  max-width: 520px;
+  line-height: 1.7;
+  margin-bottom: 2rem;
+}
+.pill-row { display: flex; gap: 8px; flex-wrap: wrap; }
+.pill {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 5px 14px;
+  border-radius: 20px;
+  font-size: 12px;
+  border: 1px solid var(--border2);
+  color: var(--muted);
+  font-family: var(--font-mono);
+}
+.pill.green { border-color: rgba(74,222,128,.3); color: var(--green); }
+.pill.amber { border-color: rgba(251,191,36,.3); color: var(--amber); }
+.pill.red { border-color: rgba(248,113,113,.3); color: var(--red); }
+
+/* ─── SECTION ─── */
+.section {
+  padding: 3rem 4rem;
+  border-bottom: 1px solid var(--border);
+}
+.section:last-child { border-bottom: none; }
+.section-header {
+  display: flex; align-items: center; gap: 16px;
+  margin-bottom: 2rem;
+}
+.section-num {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--accent);
+  background: rgba(124,106,247,.1);
+  border: 1px solid rgba(124,106,247,.25);
+  padding: 3px 10px;
+  border-radius: 4px;
+  letter-spacing: .1em;
+}
+.section-title {
+  font-family: var(--font-head);
+  font-size: 1.6rem;
+  font-weight: 700;
+}
+.section-subtitle {
+  font-size: 13px;
+  color: var(--muted);
+  margin-top: 2px;
+}
+
+/* ─── CARDS GRID ─── */
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.grid4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 1.5rem;
+  transition: border-color .2s, transform .2s;
+}
+.card:hover { border-color: var(--border2); transform: translateY(-2px); }
+.card-icon { font-size: 1.5rem; margin-bottom: .8rem; }
+.card-title {
+  font-family: var(--font-head);
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: .5rem;
+}
+.card-body { font-size: 13px; color: var(--muted); line-height: 1.7; }
+
+/* ─── DEF TABLE ─── */
+.def-table { width: 100%; border-collapse: collapse; }
+.def-table tr { border-bottom: 1px solid var(--border); }
+.def-table tr:last-child { border-bottom: none; }
+.def-table td { padding: 12px 8px; vertical-align: top; }
+.def-key {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--cyan);
+  width: 160px;
+  white-space: nowrap;
+}
+.def-val { font-size: 13px; color: var(--muted); line-height: 1.6; }
+.def-val strong { color: var(--text); font-weight: 500; }
+
+/* ─── CODE BLOCK ─── */
+.code-wrap {
+  background: #0d0f14;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  margin: 1rem 0;
+}
+.code-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 8px 16px;
+  border-bottom: 1px solid var(--border);
+  background: rgba(255,255,255,.02);
+}
+.code-lang {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--muted);
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+.code-dots { display: flex; gap: 5px; }
+.code-dot { width: 10px; height: 10px; border-radius: 50%; }
+pre {
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  line-height: 1.8;
+  padding: 1.2rem 1.5rem;
+  overflow-x: auto;
+  color: #c9d1d9;
+}
+.kw { color: #ff79c6; }
+.ty { color: #8be9fd; }
+.fn { color: #50fa7b; }
+.st { color: #f1fa8c; }
+.cm { color: #6272a4; font-style: italic; }
+.num { color: #bd93f9; }
+
+/* ─── BADGE ─── */
+.badge {
+  display: inline-flex; align-items: center;
+  padding: 2px 10px;
+  border-radius: 20px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  font-weight: 500;
+}
+.badge-easy { background: rgba(74,222,128,.1); color: var(--green); border: 1px solid rgba(74,222,128,.25); }
+.badge-med { background: rgba(251,191,36,.1); color: var(--amber); border: 1px solid rgba(251,191,36,.25); }
+.badge-hard { background: rgba(248,113,113,.1); color: var(--red); border: 1px solid rgba(248,113,113,.25); }
+
+/* ─── COMPARE TABLE ─── */
+.cmp-table { width: 100%; border-collapse: collapse; border-radius: 10px; overflow: hidden; }
+.cmp-table th {
+  background: var(--surface2);
+  padding: 10px 16px;
+  font-family: var(--font-head);
+  font-size: 13px;
+  font-weight: 600;
+  text-align: left;
+}
+.cmp-table th:first-child { color: var(--muted); }
+.cmp-table td { padding: 10px 16px; font-size: 13px; color: var(--muted); border-top: 1px solid var(--border); }
+.cmp-table td:first-child { color: var(--text); font-weight: 500; font-family: var(--font-mono); font-size: 12px; }
+
+/* ─── CALLOUT ─── */
+.callout {
+  display: flex; gap: 12px;
+  padding: 1rem 1.25rem;
+  border-radius: 10px;
+  margin: 1rem 0;
+  font-size: 13px;
+  line-height: 1.6;
+}
+.callout-info { background: rgba(34,211,238,.06); border: 1px solid rgba(34,211,238,.2); color: #a5f3fc; }
+.callout-warn { background: rgba(251,191,36,.06); border: 1px solid rgba(251,191,36,.2); color: #fde68a; }
+.callout-tip { background: rgba(74,222,128,.06); border: 1px solid rgba(74,222,128,.2); color: #bbf7d0; }
+.callout-icon { font-size: 1rem; flex-shrink: 0; margin-top: 1px; }
+
+/* ─── INHERITANCE VISUAL ─── */
+.inh-tree {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+  padding: 1.5rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+}
+.inh-node {
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  border-radius: 8px;
+  padding: 8px 20px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text);
+  text-align: center;
+  min-width: 120px;
+}
+.inh-node.accent { border-color: rgba(124,106,247,.5); color: #c4b5fd; background: rgba(124,106,247,.08); }
+.inh-node.green { border-color: rgba(74,222,128,.4); color: #86efac; }
+.inh-arrow { width: 1px; height: 24px; background: var(--border2); margin: 0 auto; }
+.inh-row { display: flex; gap: 16px; align-items: flex-start; }
+.inh-branch { display: flex; flex-direction: column; align-items: center; }
+
+/* ─── QUIZ SECTION ─── */
+.quiz-wrapper { max-width: 720px; }
+.quiz-q-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+}
+.q-meta { display: flex; align-items: center; gap: 10px; margin-bottom: 1rem; }
+.q-text { font-size: 15px; line-height: 1.6; margin-bottom: 1.2rem; }
+.opts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.opt-btn {
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--bg2);
+  color: var(--muted);
+  font-size: 13px;
+  font-family: var(--font-body);
+  cursor: pointer;
+  text-align: left;
+  transition: all .15s;
+  line-height: 1.4;
+}
+.opt-btn:hover:not(:disabled) { border-color: var(--border2); color: var(--text); background: var(--surface); }
+.opt-btn.correct { background: rgba(74,222,128,.1); border-color: rgba(74,222,128,.5); color: #86efac; }
+.opt-btn.wrong { background: rgba(248,113,113,.1); border-color: rgba(248,113,113,.4); color: #fca5a5; }
+.opt-btn:disabled { cursor: default; }
+.q-feedback { font-size: 13px; margin-top: 10px; min-height: 20px; padding: 6px 0; }
+.q-feedback.ok { color: var(--green); }
+.q-feedback.err { color: var(--red); }
+.quiz-nav { display: flex; align-items: center; gap: 12px; margin-top: 1rem; }
+.btn-primary {
+  padding: 9px 22px;
+  border-radius: 8px;
+  border: none;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  color: #fff;
+  font-size: 13px;
+  font-family: var(--font-body);
+  font-weight: 500;
+  cursor: pointer;
+  transition: opacity .2s;
+}
+.btn-primary:hover { opacity: .85; }
+.btn-ghost {
+  padding: 9px 22px;
+  border-radius: 8px;
+  border: 1px solid var(--border2);
+  background: transparent;
+  color: var(--muted);
+  font-size: 13px;
+  font-family: var(--font-body);
+  cursor: pointer;
+  transition: all .15s;
+}
+.btn-ghost:hover { color: var(--text); background: var(--surface); }
+.score-display {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 2rem;
+  text-align: center;
+  margin-bottom: 1rem;
+}
+.score-big {
+  font-family: var(--font-head);
+  font-size: 3rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, #a78bfa, #22d3ee);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.score-label { font-size: 13px; color: var(--muted); margin-top: 4px; }
+
+/* ─── PROGRESS BAR ─── */
+.progress-wrap { background: var(--surface); border-radius: 4px; height: 4px; margin-bottom: 1.5rem; }
+.progress-fill { height: 4px; border-radius: 4px; background: linear-gradient(90deg, var(--accent), var(--accent2)); transition: width .4s; }
+
+/* ─── FLASHCARD ─── */
+.fc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 14px; }
+.fc-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 1.25rem;
+  cursor: pointer;
+  transition: all .2s;
+  position: relative;
+  min-height: 130px;
+}
+.fc-card:hover { border-color: rgba(124,106,247,.4); transform: translateY(-2px); }
+.fc-front { }
+.fc-term {
+  font-family: var(--font-head);
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+.fc-hint { font-size: 11px; color: var(--muted); font-family: var(--font-mono); }
+.fc-back {
+  display: none;
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.6;
+}
+.fc-card.flipped .fc-front { display: none; }
+.fc-card.flipped .fc-back { display: block; }
+.fc-card.flipped { border-color: rgba(124,106,247,.4); background: rgba(124,106,247,.04); }
+.fc-flip-hint { position: absolute; bottom: 10px; right: 12px; font-size: 10px; color: var(--muted); font-family: var(--font-mono); }
+
+/* ─── INHERITANCE TYPE CARDS ─── */
+.inh-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 1.25rem;
+}
+.inh-type-title {
+  font-family: var(--font-head);
+  font-size: 14px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+.inh-diagram {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--cyan);
+  margin: 8px 0;
+  line-height: 1.8;
+}
+.inh-desc { font-size: 12px; color: var(--muted); line-height: 1.5; }
+
+/* ─── SCROLLBAR ─── */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+
+/* ─── RESPONSIVE ─── */
+@media (max-width: 960px) {
+  .sidebar { display: none; }
+  .main { margin-left: 0; }
+  .section { padding: 2rem 1.5rem; }
+  .hero { padding: 3rem 1.5rem; }
+  .grid2, .grid3, .grid4 { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="logo">
+    <div class="logo-tag">CSC1200</div>
+    <div class="logo-title">OOP Quest</div>
+    <div class="logo-sub">Dr. AMR MEGAHED · ECU B216</div>
+  </div>
+  <nav>
+    <div class="nav-section">Fundamentals</div>
+    <a class="nav-item active" href="#intro" onclick="setActive(this)"><span class="nav-dot"></span>What is OOP?</a>
+    <a class="nav-item" href="#classes" onclick="setActive(this)"><span class="nav-dot"></span>Classes & Objects</a>
+    <a class="nav-item" href="#constructors" onclick="setActive(this)"><span class="nav-dot"></span>Constructors & Destructors</a>
+    <div class="nav-section">Intermediate</div>
+    <a class="nav-item" href="#overloading" onclick="setActive(this)"><span class="nav-dot"></span>Overloading</a>
+    <a class="nav-item" href="#static" onclick="setActive(this)"><span class="nav-dot"></span>Static Members</a>
+    <a class="nav-item" href="#inheritance" onclick="setActive(this)"><span class="nav-dot"></span>Inheritance</a>
+    <div class="nav-section">Advanced</div>
+    <a class="nav-item" href="#polymorphism" onclick="setActive(this)"><span class="nav-dot"></span>Polymorphism</a>
+    <a class="nav-item" href="#abstract" onclick="setActive(this)"><span class="nav-dot"></span>Abstract Classes</a>
+    <a class="nav-item" href="#friend" onclick="setActive(this)"><span class="nav-dot"></span>Friend Functions</a>
+    <div class="nav-section">Practice</div>
+    <a class="nav-item" href="#flashcards" onclick="setActive(this)"><span class="nav-dot"></span>Flashcards</a>
+    <a class="nav-item" href="#quiz" onclick="setActive(this)"><span class="nav-dot"></span>Quiz</a>
+  </nav>
+</aside>
+
+<!-- MAIN CONTENT -->
+<main class="main">
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-eyebrow">Complete Revision Guide</div>
+    <h1 class="hero-title">Object-Oriented<br><span>Programming</span></h1>
+    <p class="hero-desc">A full review of CSC1200 — Classes, Inheritance, Polymorphism, Abstract Classes, and more. Everything you need before the exam.</p>
+    <div class="pill-row">
+      <span class="pill green">● 20 Easy Qs</span>
+      <span class="pill amber">● 30 Medium Qs</span>
+      <span class="pill red">● 50 Advanced Qs</span>
+      <span class="pill">10 Topics</span>
+      <span class="pill">Flashcards</span>
+    </div>
+  </section>
+
+  <!-- 01 WHAT IS OOP -->
+  <section class="section" id="intro">
+    <div class="section-header">
+      <span class="section-num">01</span>
+      <div>
+        <div class="section-title">What is OOP?</div>
+        <div class="section-subtitle">Paradigms & Core Concepts</div>
+      </div>
+    </div>
+
+    <div class="callout callout-info">
+      <span class="callout-icon">💡</span>
+      <div><strong>Key idea:</strong> OOP models real-world entities as self-contained objects that combine data (attributes) and behavior (methods) into one unit.</div>
+    </div>
+
+    <div class="grid4" style="margin-bottom:1.5rem;">
+      <div class="card"><div class="card-icon">📦</div><div class="card-title">Encapsulation</div><div class="card-body">Bundling data + methods, hiding internals via <code style="font-family:var(--font-mono);font-size:11px;color:var(--cyan)">private</code></div></div>
+      <div class="card"><div class="card-icon">🎭</div><div class="card-title">Abstraction</div><div class="card-body">Hiding complexity, exposing only the essential interface to users</div></div>
+      <div class="card"><div class="card-icon">🧬</div><div class="card-title">Inheritance</div><div class="card-body">Derived class gains capabilities of base class — "is-a" relationship</div></div>
+      <div class="card"><div class="card-icon">🔀</div><div class="card-title">Polymorphism</div><div class="card-body">Same interface, different behavior — "many forms" at runtime</div></div>
+    </div>
+
+    <div class="grid2">
+      <div class="card">
+        <div class="card-title" style="margin-bottom:1rem;">Procedural Programming</div>
+        <table class="def-table">
+          <tr><td class="def-key">Approach</td><td class="def-val">Top-down, step-by-step</td></tr>
+          <tr><td class="def-key">Data & Functions</td><td class="def-val">Separate entities</td></tr>
+          <tr><td class="def-key">Languages</td><td class="def-val">BASIC, Pascal, FORTRAN</td></tr>
+          <tr><td class="def-key">Example</td><td class="def-val">GetInput() → CalcSum() → CalcAverage()</td></tr>
+        </table>
+      </div>
+      <div class="card">
+        <div class="card-title" style="margin-bottom:1rem;">Object-Oriented Programming</div>
+        <table class="def-table">
+          <tr><td class="def-key">Approach</td><td class="def-val">Bottom-up, object-based</td></tr>
+          <tr><td class="def-key">Data & Methods</td><td class="def-val">Bundled in objects</td></tr>
+          <tr><td class="def-key">Languages</td><td class="def-val">C++, Java, Smalltalk</td></tr>
+          <tr><td class="def-key">Example</td><td class="def-val">Student object with data + ModifyGPA() + GetName()</td></tr>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- 02 CLASSES & OBJECTS -->
+  <section class="section" id="classes">
+    <div class="section-header">
+      <span class="section-num">02</span>
+      <div>
+        <div class="section-title">Classes & Objects</div>
+        <div class="section-subtitle">Blueprints and Instances</div>
+      </div>
+    </div>
+
+    <div class="grid2" style="margin-bottom:1.5rem;">
+      <div class="card">
+        <table class="def-table">
+          <tr><td class="def-key">Class</td><td class="def-val"><strong>Blueprint/template</strong> describing a type — specifies fields and methods</td></tr>
+          <tr><td class="def-key">Object</td><td class="def-val"><strong>Concrete instance</strong> created from a class — has state and behavior</td></tr>
+          <tr><td class="def-key">Field</td><td class="def-val">Data member — variable stored inside the object</td></tr>
+          <tr><td class="def-key">Method</td><td class="def-val">Member function — defines what the object can do</td></tr>
+          <tr><td class="def-key">Getter</td><td class="def-val">Accessor method — returns private data</td></tr>
+          <tr><td class="def-key">Setter</td><td class="def-val">Mutator method — validates and sets private data</td></tr>
+        </table>
+      </div>
+      <div>
+        <div class="callout callout-tip" style="margin-top:0;">
+          <span class="callout-icon">✅</span>
+          <div><strong>Golden rule:</strong> Make all data fields <code style="font-family:var(--font-mono);font-size:11px">private</code>. Provide <code style="font-family:var(--font-mono);font-size:11px">public</code> getters and setters for controlled access.</div>
+        </div>
+        <div style="margin-top:12px;">
+          <span class="badge badge-easy">public</span>&nbsp; Accessible from anywhere — inside & outside class<br><br>
+          <span class="badge badge-med">protected</span>&nbsp; Accessible by the class and its derived classes only<br><br>
+          <span class="badge badge-hard">private</span>&nbsp; Accessible ONLY within the class itself
+        </div>
+      </div>
+    </div>
+
+    <div class="code-wrap">
+      <div class="code-header"><div class="code-dots"><div class="code-dot" style="background:#ff5f57"></div><div class="code-dot" style="background:#febc2e"></div><div class="code-dot" style="background:#28c840"></div></div><div class="code-lang">C++</div></div>
+      <pre><span class="kw">class</span> <span class="ty">Rectangle</span> {
+<span class="kw">private</span>:
+    <span class="ty">float</span> length;
+    <span class="ty">float</span> width;
+<span class="kw">public</span>:
+    <span class="cm">// Setter with validation</span>
+    <span class="ty">void</span> <span class="fn">setLength</span>(<span class="ty">float</span> len) {
+        <span class="kw">if</span> (len >= <span class="num">0</span>) length = len;
+        <span class="kw">else</span> cout << <span class="st">"Error: positive value required"</span>;
+    }
+    <span class="ty">float</span> <span class="fn">getLength</span>() { <span class="kw">return</span> length; }  <span class="cm">// Getter</span>
+    <span class="ty">float</span> <span class="fn">getArea</span>()   { <span class="kw">return</span> length * width; }
+};
+
+<span class="cm">// Usage</span>
+<span class="ty">Rectangle</span> box;
+box.<span class="fn">setLength</span>(<span class="num">10.0</span>);
+cout << box.<span class="fn">getArea</span>();</pre>
+    </div>
+  </section>
+
+  <!-- 03 CONSTRUCTORS -->
+  <section class="section" id="constructors">
+    <div class="section-header">
+      <span class="section-num">03</span>
+      <div>
+        <div class="section-title">Constructors & Destructors</div>
+        <div class="section-subtitle">Object Lifecycle</div>
+      </div>
+    </div>
+
+    <div class="grid3" style="margin-bottom:1.5rem;">
+      <div class="card">
+        <div class="badge badge-easy" style="margin-bottom:.8rem;">Default Constructor</div>
+        <div class="card-body">No parameters — called when you write <code style="font-family:var(--font-mono);font-size:11px;color:var(--cyan)">Rectangle r;</code></div>
+      </div>
+      <div class="card">
+        <div class="badge badge-med" style="margin-bottom:.8rem;">Parameterized Constructor</div>
+        <div class="card-body">Takes arguments — <code style="font-family:var(--font-mono);font-size:11px;color:var(--cyan)">Rectangle r(10, 5);</code></div>
+      </div>
+      <div class="card">
+        <div class="badge badge-hard" style="margin-bottom:.8rem;">Copy Constructor</div>
+        <div class="card-body">Initializes from another object — <code style="font-family:var(--font-mono);font-size:11px;color:var(--cyan)">Distance d3(d2);</code> — member-wise copy</div>
+      </div>
+    </div>
+
+    <div class="grid2">
+      <div>
+        <div class="callout callout-warn">
+          <span class="callout-icon">⚠️</span>
+          <div><strong>Constructor rules:</strong> Same name as class · NO return type (not even void) · Called automatically at object creation</div>
+        </div>
+        <div class="callout callout-info" style="margin-top:8px;">
+          <span class="callout-icon">🔄</span>
+          <div><strong>Destructor:</strong> Named <code style="font-family:var(--font-mono);font-size:11px">~ClassName()</code> · No parameters, no return · Called when object goes out of scope · Order: <strong>constructors forward, destructors reversed</strong></div>
+        </div>
+      </div>
+      <div class="code-wrap" style="margin:0">
+        <div class="code-header"><div class="code-dots"><div class="code-dot" style="background:#ff5f57"></div><div class="code-dot" style="background:#febc2e"></div><div class="code-dot" style="background:#28c840"></div></div><div class="code-lang">C++ — Constructor order</div></div>
+        <pre><span class="kw">class</span> <span class="ty">A</span> {
+<span class="kw">public</span>:
+    <span class="fn">A</span>()  { cout << <span class="st">"A "</span>;  }
+    ~<span class="fn">A</span>() { cout << <span class="st">"~A "</span>; }
+};
+<span class="kw">class</span> <span class="ty">B</span> : <span class="kw">public</span> <span class="ty">A</span> {
+<span class="kw">public</span>:
+    <span class="fn">B</span>()  { cout << <span class="st">"B "</span>;  }
+    ~<span class="fn">B</span>() { cout << <span class="st">"~B "</span>; }
+};
+<span class="cm">// B b;  →  Output: A B ~B ~A</span></pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- 04 OVERLOADING -->
+  <section class="section" id="overloading">
+    <div class="section-header">
+      <span class="section-num">04</span>
+      <div>
+        <div class="section-title">Overloading</div>
+        <div class="section-subtitle">Method, Constructor & Operator Overloading</div>
+      </div>
+    </div>
+
+    <div class="grid2" style="margin-bottom:1.5rem;">
+      <div>
+        <div class="card" style="margin-bottom:12px;">
+          <div class="card-title">Function / Constructor Overloading</div>
+          <div class="card-body" style="margin-top:.5rem;">Multiple functions with the <strong style="color:var(--text)">same name</strong> but <strong style="color:var(--text)">different parameters</strong> (number, type, or order). Compiler picks the right version at compile time.</div>
+        </div>
+        <div class="code-wrap" style="margin:0">
+          <div class="code-header"><div class="code-dots"><div class="code-dot" style="background:#ff5f57"></div><div class="code-dot" style="background:#febc2e"></div><div class="code-dot" style="background:#28c840"></div></div><div class="code-lang">C++</div></div>
+          <pre><span class="ty">int</span>   <span class="fn">add</span>(<span class="ty">int</span> a, <span class="ty">int</span> b)         { <span class="kw">return</span> a+b; }
+<span class="ty">float</span> <span class="fn">add</span>(<span class="ty">float</span> a, <span class="ty">float</span> b)     { <span class="kw">return</span> a+b; }
+<span class="ty">int</span>   <span class="fn">add</span>(<span class="ty">int</span> a, <span class="ty">int</span> b, <span class="ty">int</span> c) { <span class="kw">return</span> a+b+c; }
+
+<span class="cm">// Constructor overloading</span>
+<span class="ty">Rectangle</span>();
+<span class="ty">Rectangle</span>(<span class="ty">float</span> l, <span class="ty">float</span> w);</pre>
+        </div>
+      </div>
+      <div>
+        <div class="card" style="margin-bottom:12px;">
+          <div class="card-title">Operator Overloading</div>
+          <div class="card-body" style="margin-top:.5rem;">Give standard operators (+, -, *, ++, etc.) new meanings for user-defined types. Syntax: <code style="font-family:var(--font-mono);font-size:11px;color:var(--cyan)">ReturnType operator+(Param)</code></div>
+        </div>
+        <div class="code-wrap" style="margin:0">
+          <div class="code-header"><div class="code-dots"><div class="code-dot" style="background:#ff5f57"></div><div class="code-dot" style="background:#febc2e"></div><div class="code-dot" style="background:#28c840"></div></div><div class="code-lang">C++</div></div>
+          <pre><span class="kw">class</span> <span class="ty">Distance</span> {
+<span class="kw">public</span>:
+    <span class="ty">int</span> feet, inches;
+    <span class="ty">Distance</span> <span class="kw">operator</span>+(<span class="ty">Distance</span> d) {
+        <span class="ty">Distance</span> temp;
+        temp.inches = inches + d.inches;
+        temp.feet   = feet + d.feet
+                    + temp.inches / <span class="num">12</span>;
+        temp.inches %= <span class="num">12</span>;
+        <span class="kw">return</span> temp;
+    }
+};
+<span class="cm">// Distance d3 = d1 + d2;</span></pre>
+        </div>
+      </div>
+    </div>
+
+    <table class="cmp-table">
+      <thead><tr><th>Concept</th><th style="color:var(--cyan)">Overloading</th><th style="color:var(--accent2)">Overriding</th></tr></thead>
+      <tbody>
+        <tr><td>Where</td><td>Same class</td><td>Derived class</td></tr>
+        <tr><td>Parameters</td><td>Must differ (type/count)</td><td>Must be identical</td></tr>
+        <tr><td>Return type</td><td>Can differ</td><td>Must be same</td></tr>
+        <tr><td>Polymorphism</td><td>Compile-time</td><td>Runtime</td></tr>
+        <tr><td>Keyword needed</td><td>None</td><td><code style="font-family:var(--font-mono);font-size:11px">virtual</code> in base</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- 05 STATIC -->
+  <section class="section" id="static">
+    <div class="section-header">
+      <span class="section-num">05</span>
+      <div>
+        <div class="section-title">Static Class Members</div>
+        <div class="section-subtitle">Class-level vs Instance-level</div>
+      </div>
+    </div>
+    <div class="grid2">
+      <div class="card">
+        <div class="card-title">Static Fields</div>
+        <table class="def-table" style="margin-top:.75rem">
+          <tr><td class="def-key">Belongs to</td><td class="def-val">The class itself, NOT any instance</td></tr>
+          <tr><td class="def-key">Shared by</td><td class="def-val">ALL objects of that class</td></tr>
+          <tr><td class="def-key">Lifetime</td><td class="def-val">Entire program execution</td></tr>
+          <tr><td class="def-key">Use case</td><td class="def-val">Count total objects created</td></tr>
+          <tr><td class="def-key">Declaration</td><td class="def-val"><code style="font-family:var(--font-mono);font-size:11px;color:var(--cyan)">static int count;</code></td></tr>
+          <tr><td class="def-key">Init (outside)</td><td class="def-val"><code style="font-family:var(--font-mono);font-size:11px;color:var(--cyan)">int Car::count = 0;</code></td></tr>
+        </table>
+      </div>
+      <div class="card">
+        <div class="card-title">Static Methods</div>
+        <table class="def-table" style="margin-top:.75rem">
+          <tr><td class="def-key">Called via</td><td class="def-val"><code style="font-family:var(--font-mono);font-size:11px;color:var(--cyan)">ClassName::method()</code></td></tr>
+          <tr><td class="def-key">Has <code style="font-family:var(--font-mono);font-size:11px">this</code>?</td><td class="def-val">NO — cannot access instance members</td></tr>
+          <tr><td class="def-key">Can access</td><td class="def-val">Only other static members</td></tr>
+          <tr><td class="def-key">Use case</td><td class="def-val">Utility/factory functions</td></tr>
+          <tr><td class="def-key">Example</td><td class="def-val"><code style="font-family:var(--font-mono);font-size:11px;color:var(--cyan)">Calc::add(5, 3);</code></td></tr>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- 06 INHERITANCE -->
+  <section class="section" id="inheritance">
+    <div class="section-header">
+      <span class="section-num">06</span>
+      <div>
+        <div class="section-title">Inheritance</div>
+        <div class="section-subtitle">Base & Derived Classes</div>
+      </div>
+    </div>
+
+    <div class="callout callout-tip" style="margin-bottom:1.5rem;">
+      <span class="callout-icon">🧬</span>
+      <div><strong>Syntax:</strong> <code style="font-family:var(--font-mono);font-size:12px">class Student : public Person { ... };</code> &nbsp;—&nbsp; Represents <strong>"is-a"</strong> relationship. Student is a Person. Car is a Vehicle.</div>
+    </div>
+
+    <div class="grid4" style="margin-bottom:1.5rem;">
+      <div class="inh-card">
+        <div class="inh-type-title">Single</div>
+        <div class="inh-diagram">A → B</div>
+        <div class="inh-desc">One class inherits from one base class only</div>
+      </div>
+      <div class="inh-card">
+        <div class="inh-type-title">Multilevel</div>
+        <div class="inh-diagram">A → B → C</div>
+        <div class="inh-desc">Derived class is created from another derived class — chain</div>
+      </div>
+      <div class="inh-card">
+        <div class="inh-type-title">Multiple</div>
+        <div class="inh-diagram">A + B → C</div>
+        <div class="inh-desc">C++ only — one class inherits from more than one base class</div>
+      </div>
+      <div class="inh-card">
+        <div class="inh-type-title">Hierarchical</div>
+        <div class="inh-diagram">A → B, C, D</div>
+        <div class="inh-desc">Multiple derived classes inherit from a single base class</div>
+      </div>
+    </div>
+
+    <table class="cmp-table" style="margin-bottom:1.5rem;">
+      <thead><tr><th>Inheritance Mode</th><th>Base public becomes</th><th>Base protected becomes</th><th>Base private</th></tr></thead>
+      <tbody>
+        <tr><td>public</td><td style="color:var(--green)">public</td><td style="color:var(--amber)">protected</td><td style="color:var(--red)">never accessible</td></tr>
+        <tr><td>protected</td><td style="color:var(--amber)">protected</td><td style="color:var(--amber)">protected</td><td style="color:var(--red)">never accessible</td></tr>
+        <tr><td>private</td><td style="color:var(--red)">private</td><td style="color:var(--red)">private</td><td style="color:var(--red)">never accessible</td></tr>
+      </tbody>
+    </table>
+
+    <div class="code-wrap">
+      <div class="code-header"><div class="code-dots"><div class="code-dot" style="background:#ff5f57"></div><div class="code-dot" style="background:#febc2e"></div><div class="code-dot" style="background:#28c840"></div></div><div class="code-lang">C++ — Inheritance + base constructor call</div></div>
+      <pre><span class="kw">class</span> <span class="ty">Animal</span> {
+<span class="kw">protected</span>:
+    string name;
+<span class="kw">public</span>:
+    <span class="fn">Animal</span>(string n) : name(n) {}
+    <span class="kw">virtual</span> <span class="ty">void</span> <span class="fn">speak</span>() { cout << <span class="st">"..."</span>; }
+};
+
+<span class="kw">class</span> <span class="ty">Dog</span> : <span class="kw">public</span> <span class="ty">Animal</span> {
+<span class="kw">public</span>:
+    <span class="fn">Dog</span>(string n) : <span class="fn">Animal</span>(n) {}        <span class="cm">// call base constructor</span>
+    <span class="ty">void</span> <span class="fn">speak</span>() <span class="kw">override</span> { cout << <span class="st">"Woof! I'm "</span> << name; }
+};</pre>
+    </div>
+  </section>
+
+  <!-- 07 POLYMORPHISM -->
+  <section class="section" id="polymorphism">
+    <div class="section-header">
+      <span class="section-num">07</span>
+      <div>
+        <div class="section-title">Polymorphism & Virtual Functions</div>
+        <div class="section-subtitle">One interface, many forms</div>
+      </div>
+    </div>
+
+    <div class="grid2" style="margin-bottom:1.5rem;">
+      <div class="card">
+        <div class="card-title">Compile-time Polymorphism</div>
+        <div class="card-body" style="margin-top:.5rem;">Resolved at <strong style="color:var(--green)">compile time</strong> by the compiler based on the argument types.</div>
+        <div style="margin-top:1rem;font-size:12px;color:var(--muted);">Achieved via:</div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:6px;">
+          <span class="badge badge-easy">Function Overloading</span>
+          <span class="badge badge-easy">Operator Overloading</span>
+          <span class="badge badge-easy">Constructor Overloading</span>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">Runtime Polymorphism</div>
+        <div class="card-body" style="margin-top:.5rem;">Resolved at <strong style="color:var(--amber)">runtime</strong> via the virtual function table (vtable).</div>
+        <div style="margin-top:1rem;font-size:12px;color:var(--muted);">Achieved via:</div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:6px;">
+          <span class="badge badge-hard">Virtual Functions</span>
+          <span class="badge badge-hard">Function Overriding</span>
+          <span class="badge badge-hard">Base Class Pointer</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="code-wrap">
+      <div class="code-header"><div class="code-dots"><div class="code-dot" style="background:#ff5f57"></div><div class="code-dot" style="background:#febc2e"></div><div class="code-dot" style="background:#28c840"></div></div><div class="code-lang">C++ — Virtual functions</div></div>
+      <pre><span class="kw">class</span> <span class="ty">Shape</span> {
+<span class="kw">protected</span>: <span class="ty">int</span> width, height;
+<span class="kw">public</span>:
+    <span class="fn">Shape</span>(<span class="ty">int</span> a=<span class="num">0</span>, <span class="ty">int</span> b=<span class="num">0</span>) : width(a), height(b) {}
+    <span class="kw">virtual</span> <span class="ty">int</span> <span class="fn">area</span>() {          <span class="cm">// virtual keyword here!</span>
+        cout << <span class="st">"Parent class area\n"</span>;
+        <span class="kw">return</span> <span class="num">0</span>;
+    }
+};
+
+<span class="kw">class</span> <span class="ty">Rectangle</span> : <span class="kw">public</span> <span class="ty">Shape</span> {
+<span class="kw">public</span>:
+    <span class="ty">int</span> <span class="fn">area</span>() <span class="kw">override</span> {          <span class="cm">// override in derived</span>
+        <span class="kw">return</span> width * height;
+    }
+};
+
+<span class="cm">// Runtime dispatch via base pointer:</span>
+<span class="ty">Shape</span> *ptr = <span class="kw">new</span> <span class="ty">Rectangle</span>(<span class="num">5</span>, <span class="num">3</span>);
+ptr-><span class="fn">area</span>();  <span class="cm">// calls Rectangle::area() — NOT Shape::area()</span></pre>
+    </div>
+  </section>
+
+  <!-- 08 ABSTRACT -->
+  <section class="section" id="abstract">
+    <div class="section-header">
+      <span class="section-num">08</span>
+      <div>
+        <div class="section-title">Abstract Classes & Interfaces</div>
+        <div class="section-subtitle">Blueprints of blueprints</div>
+      </div>
+    </div>
+
+    <div class="grid2" style="margin-bottom:1.5rem;">
+      <div>
+        <table class="def-table">
+          <tr><td class="def-key">Pure virtual</td><td class="def-val"><code style="font-family:var(--font-mono);font-size:11px;color:var(--cyan)">virtual int area() = 0;</code> — declared with <code style="font-family:var(--font-mono);font-size:11px">=0</code>, no body in base</td></tr>
+          <tr><td class="def-key">Abstract class</td><td class="def-val">Any class with ≥1 pure virtual function — <strong style="color:var(--red)">CANNOT be instantiated</strong></td></tr>
+          <tr><td class="def-key">Purpose</td><td class="def-val">Acts as interface/contract — defines WHAT must exist, not HOW</td></tr>
+          <tr><td class="def-key">Derived class</td><td class="def-val">MUST override ALL pure virtual functions or it also becomes abstract</td></tr>
+          <tr><td class="def-key">Example</td><td class="def-val">Shape (abstract) → Rectangle, Circle, Triangle all provide <code style="font-family:var(--font-mono);font-size:11px">area()</code></td></tr>
+        </table>
+      </div>
+      <div class="code-wrap" style="margin:0">
+        <div class="code-header"><div class="code-dots"><div class="code-dot" style="background:#ff5f57"></div><div class="code-dot" style="background:#febc2e"></div><div class="code-dot" style="background:#28c840"></div></div><div class="code-lang">C++ — Abstract class</div></div>
+        <pre><span class="kw">class</span> <span class="ty">Shape</span> {          <span class="cm">// abstract class</span>
+<span class="kw">public</span>:
+    <span class="kw">virtual</span> <span class="ty">float</span> <span class="fn">area</span>() = <span class="num">0</span>;  <span class="cm">// pure virtual</span>
+};
+
+<span class="cm">// Shape s;  → ERROR: cannot instantiate</span>
+
+<span class="kw">class</span> <span class="ty">Circle</span> : <span class="kw">public</span> <span class="ty">Shape</span> {
+    <span class="ty">float</span> r;
+<span class="kw">public</span>:
+    <span class="fn">Circle</span>(<span class="ty">float</span> r) : r(r) {}
+    <span class="ty">float</span> <span class="fn">area</span>() <span class="kw">override</span> {
+        <span class="kw">return</span> <span class="num">3.14</span> * r * r;
+    }
+};</pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- 09 FRIEND -->
+  <section class="section" id="friend">
+    <div class="section-header">
+      <span class="section-num">09</span>
+      <div>
+        <div class="section-title">Friend Functions & Classes</div>
+        <div class="section-subtitle">Trusted external access</div>
+      </div>
+    </div>
+
+    <div class="grid2">
+      <div class="card">
+        <div class="card-title">Friend Function</div>
+        <table class="def-table" style="margin-top:.75rem">
+          <tr><td class="def-key">What it is</td><td class="def-val">Defined outside the class but has access to ALL private/protected members</td></tr>
+          <tr><td class="def-key">Has <code style="font-family:var(--font-mono);font-size:11px">this</code>?</td><td class="def-val">NO — it is not a member function</td></tr>
+          <tr><td class="def-key">Declared with</td><td class="def-val"><code style="font-family:var(--font-mono);font-size:11px;color:var(--cyan)">friend</code> keyword inside the class</td></tr>
+          <tr><td class="def-key">Use case</td><td class="def-val">Operator overloading, external helper functions</td></tr>
+        </table>
+      </div>
+      <div class="card">
+        <div class="card-title">Friend Class</div>
+        <table class="def-table" style="margin-top:.75rem">
+          <tr><td class="def-key">What it is</td><td class="def-val">Entire class B has access to A's private/protected members</td></tr>
+          <tr><td class="def-key">Mutual?</td><td class="def-val">NO — must declare friendship in both directions separately</td></tr>
+          <tr><td class="def-key">Inherited?</td><td class="def-val">NO — friendship is NOT inherited</td></tr>
+          <tr><td class="def-key">Warning</td><td class="def-val">Use sparingly — breaks encapsulation principle</td></tr>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- 10 FLASHCARDS -->
+  <section class="section" id="flashcards">
+    <div class="section-header">
+      <span class="section-num">10</span>
+      <div>
+        <div class="section-title">Flashcards</div>
+        <div class="section-subtitle">Click each card to reveal the definition</div>
+      </div>
+    </div>
+    <div class="fc-grid">
+      <div class="fc-card" onclick="this.classList.toggle('flipped')">
+        <div class="fc-front"><div class="fc-term">Constructor</div><div class="fc-hint">object lifecycle</div></div>
+        <div class="fc-back">Special method called automatically when an object is created. Same name as class, NO return type. Initializes attributes.</div>
+        <div class="fc-flip-hint">click to flip</div>
+      </div>
+      <div class="fc-card" onclick="this.classList.toggle('flipped')">
+        <div class="fc-front"><div class="fc-term">Destructor</div><div class="fc-hint">object lifecycle</div></div>
+        <div class="fc-back">Called when object goes out of scope. Syntax: ~ClassName(). No params, no return. Releases resources. Runs in reverse order of constructors.</div>
+        <div class="fc-flip-hint">click to flip</div>
+      </div>
+      <div class="fc-card" onclick="this.classList.toggle('flipped')">
+        <div class="fc-front"><div class="fc-term">Encapsulation</div><div class="fc-hint">core OOP concept</div></div>
+        <div class="fc-back">Bundling data and methods into one unit + hiding internal fields. Private data, public getters/setters. Enforces integrity.</div>
+        <div class="fc-flip-hint">click to flip</div>
+      </div>
+      <div class="fc-card" onclick="this.classList.toggle('flipped')">
+        <div class="fc-front"><div class="fc-term">Virtual Function</div><div class="fc-hint">polymorphism</div></div>
+        <div class="fc-back">Declared with "virtual" in base class. Enables runtime polymorphism — when called via base pointer, executes the derived class version.</div>
+        <div class="fc-flip-hint">click to flip</div>
+      </div>
+      <div class="fc-card" onclick="this.classList.toggle('flipped')">
+        <div class="fc-front"><div class="fc-term">Pure Virtual Function</div><div class="fc-hint">abstract</div></div>
+        <div class="fc-back">virtual int area() = 0; — no body in base class. Makes the class abstract. Derived classes MUST override it.</div>
+        <div class="fc-flip-hint">click to flip</div>
+      </div>
+      <div class="fc-card" onclick="this.classList.toggle('flipped')">
+        <div class="fc-front"><div class="fc-term">Static Member</div><div class="fc-hint">class-level</div></div>
+        <div class="fc-back">Belongs to the class, not any instance. Shared across all objects. Called via ClassName::member. No "this" pointer in static methods.</div>
+        <div class="fc-flip-hint">click to flip</div>
+      </div>
+      <div class="fc-card" onclick="this.classList.toggle('flipped')">
+        <div class="fc-front"><div class="fc-term">Friend Function</div><div class="fc-hint">access</div></div>
+        <div class="fc-back">Non-member function that has access to private/protected data. Declared with "friend" keyword inside the class. Has no "this" pointer.</div>
+        <div class="fc-flip-hint">click to flip</div>
+      </div>
+      <div class="fc-card" onclick="this.classList.toggle('flipped')">
+        <div class="fc-front"><div class="fc-term">Overloading vs Overriding</div><div class="fc-hint">polymorphism</div></div>
+        <div class="fc-back">Overloading = same name, different params, same class, compile-time. Overriding = same name + params, derived class, needs virtual, runtime.</div>
+        <div class="fc-flip-hint">click to flip</div>
+      </div>
+      <div class="fc-card" onclick="this.classList.toggle('flipped')">
+        <div class="fc-front"><div class="fc-term">Copy Constructor</div><div class="fc-hint">constructors</div></div>
+        <div class="fc-back">ClassName(const ClassName& obj) — initializes from another object. Default does member-wise copy. Write custom for deep copy with pointers.</div>
+        <div class="fc-flip-hint">click to flip</div>
+      </div>
+      <div class="fc-card" onclick="this.classList.toggle('flipped')">
+        <div class="fc-front"><div class="fc-term">Inheritance Modes</div><div class="fc-hint">inheritance</div></div>
+        <div class="fc-back">public: public→public, protected→protected. protected: public→protected. private: everything becomes private. Private base members are NEVER directly accessible.</div>
+        <div class="fc-flip-hint">click to flip</div>
+      </div>
+      <div class="fc-card" onclick="this.classList.toggle('flipped')">
+        <div class="fc-front"><div class="fc-term">Abstract Class</div><div class="fc-hint">abstract</div></div>
+        <div class="fc-back">Class with ≥1 pure virtual function. CANNOT be instantiated directly. Serves as interface/contract. Defines WHAT must exist, not HOW.</div>
+        <div class="fc-flip-hint">click to flip</div>
+      </div>
+      <div class="fc-card" onclick="this.classList.toggle('flipped')">
+        <div class="fc-front"><div class="fc-term">this pointer</div><div class="fc-hint">OOP internals</div></div>
+        <div class="fc-back">Points to the current object instance. Available in all non-static member functions. Does NOT exist in static methods.</div>
+        <div class="fc-flip-hint">click to flip</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 11 QUIZ -->
+  <section class="section" id="quiz">
+    <div class="section-header">
+      <span class="section-num">11</span>
+      <div>
+        <div class="section-title">Quiz — Test Yourself</div>
+        <div class="section-subtitle">10 questions across all levels</div>
+      </div>
+    </div>
+    <div class="quiz-wrapper">
+      <div id="quiz-score-bar" class="score-bar" style="display:none;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:.75rem 1.25rem;display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
+        <span style="font-size:13px;color:var(--muted);">Score</span>
+        <span id="live-score" style="font-family:var(--font-mono);font-size:14px;color:var(--accent2);">0 / 0</span>
+      </div>
+      <div class="progress-wrap"><div class="progress-fill" id="quiz-progress" style="width:0%"></div></div>
+      <div id="quiz-container"></div>
+      <div class="quiz-nav">
+        <button class="btn-primary" id="btn-next" onclick="nextQuestion()" style="display:none;">Next →</button>
+        <button class="btn-ghost" onclick="resetQuiz()">↺ Restart</button>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<script>
+function setActive(el){
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  el.classList.add('active');
+}
+
+const QUESTIONS=[
+  {level:'easy',q:'What is the return type of a constructor?',opts:['void','int','bool','No return type'],ans:3},
+  {level:'easy',q:'Which access modifier makes members accessible ONLY within the class?',opts:['public','protected','private','static'],ans:2},
+  {level:'easy',q:'The "is-a" relationship in OOP is represented by:',opts:['Composition','Encapsulation','Inheritance','Polymorphism'],ans:2},
+  {level:'medium',q:'Which keyword makes a function virtual in C++?',opts:['override','abstract','virtual','dynamic'],ans:2},
+  {level:'medium',q:'Copy constructor signature is:',opts:['ClassName(ClassName c)','ClassName(const ClassName& c)','ClassName copy(ClassName c)','void ClassName(ClassName c)'],ans:1},
+  {level:'medium',q:'Static methods cannot access:',opts:['Static fields','Private members','Instance members (no this)','Public members'],ans:2},
+  {level:'hard',q:'What is the output? class A{A(){cout<<"A";}~A(){cout<<"~A";}}; class B:public A{B(){cout<<"B";}~B(){cout<<"~B";}}; — B b;',opts:['B A ~A ~B','A B ~A ~B','A B ~B ~A','B A ~B ~A'],ans:2},
+  {level:'hard',q:'A class with at least one pure virtual function is called:',opts:['Interface class','Abstract class','Template class','Friend class'],ans:1},
+  {level:'hard',q:'What happens if a derived class does NOT override a pure virtual function?',opts:['Runtime error','Base version is called','Derived class also becomes abstract','Compile error immediately'],ans:2},
+  {level:'medium',q:'Friendship in C++ is:',opts:['Mutual and inherited','One-directional and not inherited','Always mutual','Always inherited'],ans:1},
+];
+
+let qi=0,correct=0,answered=0,picked=false;
+
+function renderQuestion(){
+  const container=document.getElementById('quiz-container');
+  if(qi>=QUESTIONS.length){
+    container.innerHTML=`<div class="score-display">
+      <div class="score-big">${correct}/${QUESTIONS.length}</div>
+      <div class="score-label">${correct>=8?'Excellent! 🏆':correct>=6?'Good job! 👍':correct>=4?'Keep practicing 📚':'Review the material 🔄'}</div>
+    </div>`;
+    document.getElementById('btn-next').style.display='none';
+    document.getElementById('quiz-progress').style.width='100%';
+    return;
+  }
+  const q=QUESTIONS[qi];
+  const lvlMap={easy:'badge-easy',medium:'badge-med',hard:'badge-hard'};
+  document.getElementById('quiz-progress').style.width=((qi/QUESTIONS.length)*100)+'%';
+  container.innerHTML=`<div class="quiz-q-card">
+    <div class="q-meta">
+      <span class="badge ${lvlMap[q.level]}">${q.level}</span>
+      <span style="font-size:12px;color:var(--muted);font-family:var(--font-mono);">Q${qi+1} / ${QUESTIONS.length}</span>
+    </div>
+    <div class="q-text">${q.q}</div>
+    <div class="opts-grid">
+      ${q.opts.map((o,i)=>`<button class="opt-btn" onclick="pick(${i})">${o}</button>`).join('')}
+    </div>
+    <div class="q-feedback" id="feedback"></div>
+  </div>`;
+  document.getElementById('btn-next').style.display='none';
+  picked=false;
+}
+
+function pick(i){
+  if(picked)return;
+  picked=true;
+  const q=QUESTIONS[qi];
+  const btns=document.querySelectorAll('.opt-btn');
+  btns.forEach(b=>b.disabled=true);
+  btns[q.ans].classList.add('correct');
+  answered++;
+  const fb=document.getElementById('feedback');
+  if(i===q.ans){
+    correct++;
+    fb.className='q-feedback ok';
+    fb.textContent='✓ Correct!';
+  } else {
+    btns[i].classList.add('wrong');
+    fb.className='q-feedback err';
+    fb.textContent='✗ Wrong. Correct: '+q.opts[q.ans];
+  }
+  document.getElementById('live-score').textContent=correct+' / '+answered;
+  document.getElementById('btn-next').style.display='inline-flex';
+}
+
+function nextQuestion(){ qi++; renderQuestion(); }
+function resetQuiz(){ qi=0;correct=0;answered=0;document.getElementById('live-score').textContent='0/0';document.getElementById('quiz-progress').style.width='0%';renderQuestion(); }
+
+window.onload=()=>{ renderQuestion(); };
+</script>
+</body>
+</html>
